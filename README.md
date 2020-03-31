@@ -1,11 +1,10 @@
 # 2019 Novel Coronavirus (COVID-19) Visualization
 
-
-This relies heavily on the 2019 Novel Coronavirus dataset maintained by
+This work is built upon on the 2019 Novel Coronavirus dataset maintained by
 the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE):
 https://github.com/CSSEGISandData/COVID-19 
 
-The Visual Dashboard is great, but not particularly flexible:  
+Their Visual Dashboard is great, but the plots it generates are not customizable:  
 
 <b>Visual Dashboard (desktop):</b><br>
 https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
