@@ -12,5 +12,5 @@ Their Visual Dashboard ([desktop](https://www.arcgis.com/apps/opsdashboard/index
 
 ![provinces](/visualization/ProvincesConfirmed.png)
 
-Sources for the significant dates marked on these plots are given in [/visualization/plots.py](plots.py). 
+Sources for the significant dates marked on these plots are given in [/visualization/plots.py](/visualization/plots.py). 
 Errors in the choice of these dates are all mine.
