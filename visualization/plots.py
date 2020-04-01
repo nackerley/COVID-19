@@ -6,12 +6,15 @@ Created on Sun Mar 29 20:46:20 2020
 @author: nick
 """
 import os
+from math import log
 import datetime
-import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.dates import AutoDateLocator, ConciseDateFormatter
+from matplotlib.dates import (AutoDateLocator, ConciseDateFormatter,
+                              date2num, num2date)
 from io import StringIO
 from difflib import get_close_matches
+
+import pandas as pd
 
 # %% constants
 DATA_PATH = ('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/'
@@ -99,6 +102,22 @@ def aggregator(item):
         return 'first'
 
 
+def add_rates(ax, dates, rates=(0.1, 0.33), linestyles=('--', '-.', ':')):
+    xlim = date2num([dates[0], dates[-1]])
+    ylim = ax.get_ylim()
+    for rate, linestyle in zip(rates, linestyles):
+        label = '%.0f%%/day growth' % (100*rate)
+        x = xlim[1] - log(ylim[1]/ylim[0], 1 + rate)
+        y = ylim[1]/(1 + rate)**(xlim[1] - xlim[0])
+        if x < xlim[0]:
+            x = xlim[0]
+        else:
+            y = ylim[0]
+        ax.semilogy(
+            [item.date() for item in num2date([x, xlim[1]])], [y, ylim[1]],
+            label=label, linestyle=linestyle, linewidth=1, color='0.5')
+
+
 # %% COVID-19 data
 confirmed_df = pd.read_csv(os.path.join(DATA_PATH, CONFIRMED_CSV))
 confirmed_df.columns = [maybe_date(item) for item in confirmed_df.columns]
@@ -164,13 +183,14 @@ for i, countries in enumerate(PLOT_COUNTRIES, start=1):
                 arrowprops=dict(arrowstyle='-|>', color=line.get_color()),
                 **kwargs)
 
-        locator = AutoDateLocator()
-        ax.xaxis.set_major_locator(locator)
-        ax.xaxis.set_major_formatter(ConciseDateFormatter(locator))
-        ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
-        ax.set_ylabel('Confirmed cases per million people')
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
+    locator = AutoDateLocator()
+    ax.xaxis.set_major_locator(locator)
+    ax.xaxis.set_major_formatter(ConciseDateFormatter(locator))
+    add_rates(ax, dates)
+    ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    ax.set_ylabel('Confirmed cases per million people')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
 
     confirmed_png = 'CountriesConfirmed%d_%s.png' % (i, dates[-1])
     fig.savefig(confirmed_png, dpi=96, bbox_inches='tight')
@@ -200,15 +220,16 @@ for province in provinces_df.iloc[:8].index:
             arrowprops=dict(arrowstyle='-|>', color=line.get_color()),
             **kwargs)
 
-    locator = AutoDateLocator()
-    ax.xaxis.set_major_locator(locator)
-    ax.xaxis.set_major_formatter(ConciseDateFormatter(locator))
-    ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
-    ax.set_ylabel('Confirmed cases per million people')
-    ax.set_xlim(((pd.to_datetime(info.date) -
-                  pd.to_timedelta(30, unit='day')).date(), ax.get_xlim()[1]))
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
+locator = AutoDateLocator()
+ax.xaxis.set_major_locator(locator)
+ax.xaxis.set_major_formatter(ConciseDateFormatter(locator))
+add_rates(ax, dates)
+ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+ax.set_ylabel('Confirmed cases per million people')
+ax.set_xlim(((pd.to_datetime(info.date) -
+              pd.to_timedelta(30, unit='day')).date(), ax.get_xlim()[1]))
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
 
 confirmed_png = 'ProvincesConfirmed_%s.png' % dates[-1]
 fig.savefig(confirmed_png, dpi=96, bbox_inches='tight')
