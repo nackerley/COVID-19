@@ -192,7 +192,7 @@ for i, countries in enumerate(PLOT_COUNTRIES, start=1):
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
 
-    confirmed_png = 'CountriesConfirmed%d_%s.png' % (i, dates[-1])
+    confirmed_png = 'CountriesConfirmed%d.png' % i
     fig.savefig(confirmed_png, dpi=96, bbox_inches='tight')
 
 # %% plot country data
@@ -223,7 +223,7 @@ for province in provinces_df.iloc[:8].index:
 locator = AutoDateLocator()
 ax.xaxis.set_major_locator(locator)
 ax.xaxis.set_major_formatter(ConciseDateFormatter(locator))
-add_rates(ax, dates)
+add_rates(ax, [info.date, dates[-1]])
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 ax.set_ylabel('Confirmed cases per million people')
 ax.set_xlim(((pd.to_datetime(info.date) -
@@ -231,5 +231,5 @@ ax.set_xlim(((pd.to_datetime(info.date) -
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 
-confirmed_png = 'ProvincesConfirmed_%s.png' % dates[-1]
+confirmed_png = 'ProvincesConfirmed.png'
 fig.savefig(confirmed_png, dpi=96, bbox_inches='tight')
