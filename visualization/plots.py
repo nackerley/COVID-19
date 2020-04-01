@@ -223,11 +223,12 @@ for province in provinces_df.iloc[:8].index:
 locator = AutoDateLocator()
 ax.xaxis.set_major_locator(locator)
 ax.xaxis.set_major_formatter(ConciseDateFormatter(locator))
-add_rates(ax, [info.date, dates[-1]])
+start_date = (pd.to_datetime(info.date) -
+              pd.to_timedelta(30, unit='day')).date()
+add_rates(ax, [start_date, dates[-1]])
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 ax.set_ylabel('Confirmed cases per million people')
-ax.set_xlim(((pd.to_datetime(info.date) -
-              pd.to_timedelta(30, unit='day')).date(), ax.get_xlim()[1]))
+ax.set_xlim((start_date, ax.get_xlim()[1]))
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 
