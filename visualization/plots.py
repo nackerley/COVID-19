@@ -9,8 +9,8 @@ import os
 from math import log
 import datetime
 import matplotlib.pyplot as plt
-from matplotlib.dates import (AutoDateLocator, ConciseDateFormatter,
-                              date2num, num2date)
+from matplotlib.dates import (
+    MonthLocator, ConciseDateFormatter, date2num, num2date)
 from io import StringIO
 from difflib import get_close_matches
 
@@ -212,21 +212,25 @@ for i, countries in enumerate(PLOT_COUNTRIES, start=1):
 
     ax.semilogy(
         dates, deaths_country_df.loc[country, dates]/milion_people,
-        color='black', linestyle=':', alpha=0.5, label='deaths')[0]
+        color='black', linestyle=':', alpha=0.5, label='Deaths')[0]
 
-    locator = AutoDateLocator()
+    locator = MonthLocator(bymonthday=(1, 15))
     ax.xaxis.set_major_locator(locator)
     ax.xaxis.set_major_formatter(ConciseDateFormatter(locator))
 
     add_rates(ax, dates, color='black', linewidth=1)
 
-    ax.legend(loc='lower left', bbox_to_anchor=(1, 0))
-    ax.set_ylabel('Confirmed cases per million people')
+    ax.legend(title='Confirmed cases', loc='center left',
+              bbox_to_anchor=(1, 0.5))
+    ax.set_ylabel('Rate per million people')
+    start_date = (pd.to_datetime(dates[0]) -
+                  pd.to_timedelta(1, unit='day')).date()
+    ax.set_xlim((start_date, dates[-1]))
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
 
     confirmed_png = 'CountriesConfirmed%d.png' % i
-    fig.savefig(confirmed_png, dpi=96, bbox_inches='tight')
+    fig.savefig(confirmed_png, dpi=120, bbox_inches='tight')
 
 # %% plot country data
 fig, ax = plt.subplots(figsize=(6.5, 4))
@@ -236,7 +240,7 @@ for province in cases_province_df.iloc[:8].index:
     milion_people = prov_pop_df.at[province, 'Population, 2016']/1e6
     code = SGC_CODES[prov_pop_df.at[province, 'Geographic code']]
     current = cases_province_df.loc[province, dates[-1]]
-    label = '%s: %d cases, %.1fM people' % (code, current, milion_people)
+    label = '%s: %.1fk/%.1fM' % (code, current/1e3, milion_people)
     line = ax.semilogy(
         dates, cases_province_df.loc[province, dates]/milion_people,
         label=label)[0]
@@ -259,19 +263,19 @@ for province in cases_province_df.iloc[:8].index:
 
 ax.semilogy(
     dates, deaths_province_df.loc[province, dates]/milion_people,
-    color='black', linestyle=':', alpha=0.5, label='deaths')[0]
+    color='black', linestyle=':', alpha=0.5, label='Deaths')[0]
 
-locator = AutoDateLocator()
+locator = MonthLocator(bymonthday=(1, 15))
 ax.xaxis.set_major_locator(locator)
 ax.xaxis.set_major_formatter(ConciseDateFormatter(locator))
 start_date = (pd.to_datetime(info.date) -
               pd.to_timedelta(30, unit='day')).date()
 add_rates(ax, [start_date, dates[-1]], linewidth=1, color='0.5')
-ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-ax.set_ylabel('Confirmed cases per million people')
-ax.set_xlim((start_date, ax.get_xlim()[1]))
+ax.legend(title='Confirmed cases', loc='center left', bbox_to_anchor=(1, 0.5))
+ax.set_ylabel('Rate per million people')
+ax.set_xlim((start_date, dates[-1]))
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 
 confirmed_png = 'ProvincesConfirmed.png'
-fig.savefig(confirmed_png, dpi=96, bbox_inches='tight')
+fig.savefig(confirmed_png, dpi=120, bbox_inches='tight')
