@@ -81,7 +81,7 @@ SGC_CODES = {
     61: 'NT',
     62: 'NU',
     }
-
+DPI = 96
 
 # %% definitions
 def maybe_date(item):
@@ -230,7 +230,7 @@ for i, countries in enumerate(PLOT_COUNTRIES, start=1):
     ax.spines['right'].set_visible(False)
 
     confirmed_png = 'CountriesConfirmed%d.png' % i
-    fig.savefig(confirmed_png, dpi=120, bbox_inches='tight')
+    fig.savefig(confirmed_png, dpi=DPI, bbox_inches='tight')
 
 # %% plot country data
 fig, ax = plt.subplots(figsize=(6.5, 4))
@@ -278,4 +278,4 @@ ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 
 confirmed_png = 'ProvincesConfirmed.png'
-fig.savefig(confirmed_png, dpi=120, bbox_inches='tight')
+fig.savefig(confirmed_png, dpi=DPI, bbox_inches='tight')
