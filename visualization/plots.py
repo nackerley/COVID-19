@@ -83,6 +83,7 @@ SGC_CODES = {
     }
 DPI = 96
 
+
 # %% definitions
 def maybe_date(item):
     try:
@@ -102,7 +103,7 @@ def aggregator(item):
         return 'first'
 
 
-def add_rates(ax, dates, rates=(0.1, 0.33), linestyles=('--', '-.', ':'),
+def add_rates(ax, dates, rates=(0.1, 0.4), linestyles=('--', '-.', ':'),
               **kwargs):
     xlim = date2num([dates[0], dates[-1]])
     ylim = ax.get_ylim()
