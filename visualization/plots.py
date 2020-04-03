@@ -31,9 +31,9 @@ PROV_POP_CSV = (
     'T=101&SR=1&RPP=25&PR=0&CMA=0&CSD=0&S=50&O=A&Lang=Eng&OFT=CSV')
 
 PLOT_COUNTRIES = [
-    ['China', 'Italy', 'Canada', 'United States', 'Iran', 'South Korea',
+    ['China', 'Canada', 'Italy', 'United States', 'Iran', 'South Korea',
      'Taiwan', 'Singapore'],
-    ['China', 'Italy', 'Canada', 'United Kingdom', 'France', 'Germany',
+    ['China', 'Canada', 'Italy', 'United Kingdom', 'France', 'Spain',
      'Sweden', 'Russia'],
      ]
 
