@@ -7,6 +7,7 @@ Created on Sun Mar 29 20:46:20 2020
 """
 import os
 from math import log
+import numpy as np
 import datetime
 import matplotlib.pyplot as plt
 from matplotlib.dates import (
@@ -17,6 +18,9 @@ from difflib import get_close_matches
 import pandas as pd
 
 # %% constants
+MEAN_DAYS = 7
+FIRST_VALID = MEAN_DAYS//2 + 1
+LAST_VALID = -MEAN_DAYS//2
 DATA_PATH = ('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/'
              'master/csse_covid_19_data/csse_covid_19_time_series')
 CASES_CSV = 'time_series_covid19_confirmed_global.csv'
@@ -33,8 +37,8 @@ PROV_POP_CSV = (
 PLOT_COUNTRIES = [
     ['China', 'South Korea', 'Italy', 'Iran', 'United States', 'Canada',
      'Taiwan', 'Singapore'],
-    ['China', 'Italy', 'Spain', 'France', 'United Kingdom', 'Sweden', 'Canada',
-     'Russia'],
+    ['China', 'Italy', 'Spain', 'France', 'United Kingdom', 'Germany',
+     'Sweden', 'Canada'],
     ['China', 'South Korea', 'Italy', 'Spain', 'United States', 'Canada',
      'Russia', 'Brazil'],
      ]
@@ -133,32 +137,40 @@ cases_df['Province/State'].fillna('', inplace=True)
 cases_df = cases_df[~cases_df['Province/State'].isin(NON_STATES)]
 
 aggregators = {item: aggregator(item) for item in cases_df.columns}
-cases_country_df = cases_df.groupby('Country/Region').agg(
-    aggregators).drop(columns='Country/Region')
+cases_country_df = cases_df.groupby('Country/Region').agg(aggregators)
+cases_country_df = cases_country_df[dates]
+cases_country_df = cases_country_df.diff(
+    axis=1).rolling(MEAN_DAYS, axis=1, center=True).mean()
+cases_country_df[cases_country_df == 0] = np.NaN
 
 cases_province_df = cases_df[cases_df['Country/Region'] == 'Canada'].copy()
-cases_province_df.drop(columns=['Country/Region', 'Lat', 'Long'], inplace=True)
 cases_province_df.set_index('Province/State', inplace=True)
+cases_province_df = cases_province_df[dates]
 cases_province_df.sort_values(dates[-1], inplace=True, ascending=False)
+cases_province_df = cases_province_df.diff(
+    axis=1).rolling(MEAN_DAYS, axis=1, center=True).mean()
+cases_province_df[cases_province_df == 0] = np.NaN
 
 deaths_df = pd.read_csv(os.path.join(DATA_PATH, DEATHS_CSV))
 deaths_df.columns = [maybe_date(item) for item in deaths_df.columns]
-dates = [item for item in deaths_df.columns
-         if isinstance(item, datetime.date)]
-as_of = 'Johns Hopkins CSSE\nCOVID-19 data\nto %s' % dates[-1]
 deaths_df['Country/Region'] = deaths_df['Country/Region'].replace(RENAME)
 deaths_df['Province/State'].fillna('', inplace=True)
 deaths_df = deaths_df[~deaths_df['Province/State'].isin(NON_STATES)]
 
 aggregators = {item: aggregator(item) for item in deaths_df.columns}
-deaths_country_df = deaths_df.groupby('Country/Region').agg(
-    aggregators).drop(columns='Country/Region')
+deaths_country_df = deaths_df.groupby('Country/Region').agg(aggregators)
+deaths_country_df = deaths_country_df[dates]
+deaths_country_df = deaths_country_df.diff(
+    axis=1).rolling(MEAN_DAYS, axis=1, center=True).mean()
+deaths_country_df[deaths_country_df == 0] = np.NaN
 
 deaths_province_df = deaths_df[deaths_df['Country/Region'] == 'Canada'].copy()
-deaths_province_df.drop(columns=['Country/Region', 'Lat', 'Long'],
-                        inplace=True)
 deaths_province_df.set_index('Province/State', inplace=True)
+deaths_province_df = deaths_province_df[dates]
 deaths_province_df.sort_values(dates[-1], inplace=True, ascending=False)
+deaths_province_df = deaths_province_df.diff(
+    axis=1).rolling(MEAN_DAYS, axis=1, center=True).mean()
+deaths_province_df[deaths_province_df == 0] = np.NaN
 
 
 # %% auxiliary data
@@ -190,8 +202,8 @@ for i, countries in enumerate(PLOT_COUNTRIES, start=1):
             raise RuntimeError('No population data.')
 
         code = pop_df.at[country, 'Country Code']
-        cases = cases_country_df.loc[country, dates[-1]]
-        label = '%s: %dk/%dM' % (code, cases/1e3, milion_people)
+        cases = cases_country_df.loc[country, dates[LAST_VALID]]
+        label = '%s: %d/%dM' % (code, cases, milion_people)
         line = ax.semilogy(
             dates, cases_country_df.loc[country, dates]/milion_people,
             label=label)[0]
@@ -201,9 +213,10 @@ for i, countries in enumerate(PLOT_COUNTRIES, start=1):
                 kwargs = dict(xytext=(0, 20), va='bottom')
             else:
                 kwargs = dict(xytext=(0, -20), va='top')
-            cases_pmp = cases_country_df.loc[country, info.date]/milion_people
+            date = max(info.date, dates[FIRST_VALID])
+            cases_pmp = cases_country_df.loc[country, date]/milion_people
             ax.annotate(
-                info.event, (info.date, cases_pmp), textcoords='offset points',
+                info.event, (date, cases_pmp), textcoords='offset points',
                 color=line.get_color(), fontsize=8, rotation=90, ha='center',
                 fontweight='bold',
                 arrowprops=dict(arrowstyle='-|>', color=line.get_color()),
@@ -225,25 +238,25 @@ for i, countries in enumerate(PLOT_COUNTRIES, start=1):
 
     ax.legend(title='Confirmed cases', loc='center left',
               bbox_to_anchor=(1, 0.5))
-    ax.set_ylabel('Rate per million people')
+    ax.set_ylabel('per million people per day')
     start_date = (pd.to_datetime(dates[0]) -
                   pd.to_timedelta(1, unit='day')).date()
-    ax.set_xlim((start_date, dates[-1]))
+    ax.set_xlim((start_date, dates[LAST_VALID]))
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
 
-    confirmed_png = 'CountriesConfirmed%d.png' % i
+    confirmed_png = 'CountriesConfirmedPerDay%d.png' % i
     fig.savefig(confirmed_png, dpi=DPI, bbox_inches='tight')
 
-# %% plot country data
+# %% plot province data
 fig, ax = plt.subplots(figsize=(6.5, 4))
 ax.annotate(as_of, (0.05, 0.95), xycoords='axes fraction', va='top')
 
 for province in cases_province_df.iloc[:8].index:
     milion_people = prov_pop_df.at[province, 'Population, 2016']/1e6
     code = SGC_CODES[prov_pop_df.at[province, 'Geographic code']]
-    current = cases_province_df.loc[province, dates[-1]]
-    label = '%s: %.1fk/%.1fM' % (code, current/1e3, milion_people)
+    current = cases_province_df.loc[province, dates[LAST_VALID]]
+    label = '%s: %.1f/%.1fM' % (code, current, milion_people)
     line = ax.semilogy(
         dates, cases_province_df.loc[province, dates]/milion_people,
         label=label)[0]
@@ -273,12 +286,12 @@ ax.xaxis.set_major_locator(locator)
 ax.xaxis.set_major_formatter(ConciseDateFormatter(locator))
 start_date = (pd.to_datetime(info.date) -
               pd.to_timedelta(30, unit='day')).date()
-add_rates(ax, [start_date, dates[-1]], linewidth=1, color='0.5')
+add_rates(ax, [start_date, dates[LAST_VALID]], linewidth=1, color='black')
 ax.legend(title='Confirmed cases', loc='center left', bbox_to_anchor=(1, 0.5))
-ax.set_ylabel('Rate per million people')
-ax.set_xlim((start_date, dates[-1]))
+ax.set_ylabel('per million people per day')
+ax.set_xlim((start_date, dates[LAST_VALID]))
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 
-confirmed_png = 'ProvincesConfirmed.png'
+confirmed_png = 'ProvincesConfirmedPerDay.png'
 fig.savefig(confirmed_png, dpi=DPI, bbox_inches='tight')
