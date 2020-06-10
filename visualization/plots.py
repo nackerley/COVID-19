@@ -41,34 +41,50 @@ PLOT_COUNTRIES = [
      'Sweden', 'Canada'],
     ['China', 'South Korea', 'Italy', 'Spain', 'United States', 'Canada',
      'Russia', 'Brazil'],
+    ['China',  'United States', 'Canada',
+     'Uruguay', 'Peru', 'Brazil', 'Mexico', 'Cuba'],
+    ['China', 'United States', 'Canada',
+     'South Africa', 'Zimbabwe', 'Kenya', 'Uganda', 'DR Congo'],
      ]
 
-RENAME = {
+CASES_RENAME = {
     'US': 'United States',
     'Taiwan*': 'Taiwan',
-    'Korea, South': 'South Korea'}
+    'Korea, South': 'South Korea',
+    'Congo (Kinshasa)': 'DR Congo',
+    }
+POP_RENAME = {
+    'Korea, Rep.': 'South Korea',
+    'Iran, Islamic Rep.': 'Iran',
+    'Russian Federation': 'Russia',
+    'Congo, Dem. Rep.': 'DR Congo',
+    }
 NON_STATES = ['Recovered']
 
 EVENT_DF = pd.read_fwf(StringIO('''\
-         country                         event        date arrow                                                                         source
-           China                Wuhan lockdown  2020-01-23    up   https://en.wikipedia.org/wiki/2019-20_coronavirus_pandemic_in_mainland_China
-     South Korea                super-spreader  2020-02-18    up          https://www.csis.org/analysis/timeline-south-koreas-response-covid-19
-           Italy                super-spreader  2020-02-19    up               https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Italy
-     South Korea            drive-thru testing  2020-02-23    up          https://www.csis.org/analysis/timeline-south-koreas-response-covid-19
-     South Korea             social-distancing  2020-02-29    up          https://www.csis.org/analysis/timeline-south-koreas-response-covid-19
-           Italy             Lombardy lockdown  2020-03-08  down               https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Italy
-          Taiwan            no-travel advisory  2020-03-15    up              https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Taiwan
-          France                      lockdown  2020-03-16    up              https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_France
-         Germany    non-essential shops closed  2020-03-16  down             https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Germany
-          Canada         ON state of emergency  2020-03-17  down             https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Ontario
-         Ontario            state of emergency  2020-03-17  down             https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Ontario
-British Columbia            state of emergency  2020-03-18  down    https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_British_Columbia
-   United States               NY stay-at-home  2020-03-20    up            https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_New_York
-          Russia               Moscow lockdown  2020-03-20  down              https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Russia
-       Singapore    extended social distancing  2020-03-20  down           https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Singapore
-          Quebec  non-essential business close  2020-03-23  down              https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Quebec
-  United Kingdom                      lockdown  2020-03-24  down  https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_the_United_Kingdom
-         Alberta  non-essential business close  2020-03-28  down             https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Alberta
+         country                         event        date arrow                                                                                   source
+           China                Wuhan lockdown  2020-01-23    up             https://en.wikipedia.org/wiki/2019-20_coronavirus_pandemic_in_mainland_China
+     South Korea                super-spreader  2020-02-18    up                    https://www.csis.org/analysis/timeline-south-koreas-response-covid-19
+           Italy                super-spreader  2020-02-19    up                         https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Italy
+     South Korea            drive-thru testing  2020-02-23    up                    https://www.csis.org/analysis/timeline-south-koreas-response-covid-19
+     South Korea             social-distancing  2020-02-29    up                    https://www.csis.org/analysis/timeline-south-koreas-response-covid-19
+         Uruguay                super-spreader  2020-03-07    up  https://www.theguardian.com/world/2020/mar/19/uruguay-coronavirus-party-guest-argentina
+           Italy             Lombardy lockdown  2020-03-08  down                         https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Italy
+          Taiwan            no-travel advisory  2020-03-15    up                        https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Taiwan
+          France                      lockdown  2020-03-16    up                        https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_France
+         Germany    non-essential shops closed  2020-03-16  down                       https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Germany
+          Canada         ON state of emergency  2020-03-17  down                       https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Ontario
+         Ontario            state of emergency  2020-03-17  down                       https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Ontario
+British Columbia            state of emergency  2020-03-18  down              https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_British_Columbia
+   United States               NY stay-at-home  2020-03-20    up                      https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_New_York
+          Russia               Moscow lockdown  2020-03-20  down                        https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Russia
+       Singapore    extended social distancing  2020-03-20  down                     https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Singapore
+          Quebec  non-essential business close  2020-03-23  down                        https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Quebec
+  United Kingdom                      lockdown  2020-03-24  down            https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_the_United_Kingdom
+         Alberta  non-essential business close  2020-03-28  down                       https://en.wikipedia.org/wiki/2020_coronavirus_pandemic_in_Alberta
+          France        réouverture des écoles  2020-05-11  down  https://www.education.gouv.fr/reouverture-progressive-des-ecoles-retour-en-images-303600
+   United States   George Floyd protests start  2020-05-26  down                                      https://en.wikipedia.org/wiki/George_Floyd_protests
+          Quebec      Montreal daycares reopen  2020-06-01  down  https://www.ledevoir.com/societe/education/580011/les-garderies-de-montreal-en-bonne-partie-boudees-a-leur-reouverture
 '''))  # noqa
 EVENT_DF['date'] = pd.to_datetime(EVENT_DF.date).dt.date
 
@@ -132,7 +148,7 @@ cases_df.columns = [maybe_date(item) for item in cases_df.columns]
 dates = [item for item in cases_df.columns
          if isinstance(item, datetime.date)]
 as_of = 'Johns Hopkins CSSE\nCOVID-19 data\nto %s' % dates[-1]
-cases_df['Country/Region'] = cases_df['Country/Region'].replace(RENAME)
+cases_df['Country/Region'] = cases_df['Country/Region'].replace(CASES_RENAME)
 cases_df['Province/State'].fillna('', inplace=True)
 cases_df = cases_df[~cases_df['Province/State'].isin(NON_STATES)]
 
@@ -153,7 +169,7 @@ cases_province_df[cases_province_df == 0] = np.NaN
 
 deaths_df = pd.read_csv(os.path.join(DATA_PATH, DEATHS_CSV))
 deaths_df.columns = [maybe_date(item) for item in deaths_df.columns]
-deaths_df['Country/Region'] = deaths_df['Country/Region'].replace(RENAME)
+deaths_df['Country/Region'] = deaths_df['Country/Region'].replace(CASES_RENAME)
 deaths_df['Province/State'].fillna('', inplace=True)
 deaths_df = deaths_df[~deaths_df['Province/State'].isin(NON_STATES)]
 
@@ -178,10 +194,7 @@ pop_df = pd.read_csv(POP_CSV)
 pop_df['Value'] = pop_df['Value'].astype(int)
 pop_df.sort_values('Year', inplace=True)
 pop_df.drop_duplicates('Country Code', keep='last', inplace=True)
-pop_df['Country Name'] = pop_df['Country Name'].replace(
-    {'Korea, Rep.': 'South Korea',
-     'Iran, Islamic Rep.': 'Iran',
-     'Russian Federation': 'Russia'})
+pop_df['Country Name'] = pop_df['Country Name'].replace(POP_RENAME)
 pop_df.set_index('Country Name', inplace=True)
 pop_df.at['Taiwan', 'Value'] = 23.78e6
 pop_df.at['Taiwan', 'Country Code'] = 'TW'
@@ -191,9 +204,10 @@ prov_pop_df = pd.read_csv(PROV_POP_CSV, skipfooter=12,
 
 # %% plot country data
 for i, countries in enumerate(PLOT_COUNTRIES, start=1):
-    fig, ax = plt.subplots(figsize=(6.5, 4))
+    fig, ax = plt.subplots(figsize=(7.5, 4))
     ax.annotate(as_of, (0.05, 0.95), xycoords='axes fraction', va='top')
     for country in countries:
+
         try:
             milion_people = pop_df.at[country, 'Value']/1e6
         except KeyError:
@@ -202,7 +216,7 @@ for i, countries in enumerate(PLOT_COUNTRIES, start=1):
             raise RuntimeError('No population data.')
 
         code = pop_df.at[country, 'Country Code']
-        cases = cases_country_df.loc[country, dates[LAST_VALID]]
+        cases = np.max(cases_country_df.loc[country])
         label = '%s: %d/%dM' % (code, cases, milion_people)
         line = ax.semilogy(
             dates, cases_country_df.loc[country, dates]/milion_people,
@@ -213,10 +227,11 @@ for i, countries in enumerate(PLOT_COUNTRIES, start=1):
                 kwargs = dict(xytext=(0, 20), va='bottom')
             else:
                 kwargs = dict(xytext=(0, -20), va='top')
-            date = max(info.date, dates[FIRST_VALID])
+            valid = ~pd.isnull(cases_country_df.loc[country, dates])
+            date = max(info.date, valid.idxmax())
             cases_pmp = cases_country_df.loc[country, date]/milion_people
             ax.annotate(
-                info.event, (date, cases_pmp), textcoords='offset points',
+                info.event, (info.date, cases_pmp), textcoords='offset points',
                 color=line.get_color(), fontsize=8, rotation=90, ha='center',
                 fontweight='bold',
                 arrowprops=dict(arrowstyle='-|>', color=line.get_color()),
@@ -236,7 +251,7 @@ for i, countries in enumerate(PLOT_COUNTRIES, start=1):
 
     add_rates(ax, dates, color='black', linewidth=1)
 
-    ax.legend(title='Confirmed cases', loc='center left',
+    ax.legend(title='Confirmed cases: peak', loc='center left',
               bbox_to_anchor=(1, 0.5))
     ax.set_ylabel('per million people per day')
     start_date = (pd.to_datetime(dates[0]) -
@@ -249,14 +264,14 @@ for i, countries in enumerate(PLOT_COUNTRIES, start=1):
     fig.savefig(confirmed_png, dpi=DPI, bbox_inches='tight')
 
 # %% plot province data
-fig, ax = plt.subplots(figsize=(6.5, 4))
+fig, ax = plt.subplots(figsize=(7.5, 4))
 ax.annotate(as_of, (0.05, 0.95), xycoords='axes fraction', va='top')
 
 for province in cases_province_df.iloc[:8].index:
     milion_people = prov_pop_df.at[province, 'Population, 2016']/1e6
     code = SGC_CODES[prov_pop_df.at[province, 'Geographic code']]
-    current = cases_province_df.loc[province, dates[LAST_VALID]]
-    label = '%s: %.1f/%.1fM' % (code, current, milion_people)
+    maximum = np.max(cases_province_df.loc[province])
+    label = '%s: %.1f/%.1fM' % (code, maximum, milion_people)
     line = ax.semilogy(
         dates, cases_province_df.loc[province, dates]/milion_people,
         label=label)[0]
@@ -270,6 +285,7 @@ for province in cases_province_df.iloc[:8].index:
         ax.annotate(
             info.event, (info.date, cases_pmp), textcoords='offset points',
             color=line.get_color(), fontsize=8, rotation=90, ha='center',
+            fontweight='bold',
             arrowprops=dict(arrowstyle='-|>', color=line.get_color()),
             **kwargs)
 
@@ -287,7 +303,8 @@ ax.xaxis.set_major_formatter(ConciseDateFormatter(locator))
 start_date = (pd.to_datetime(info.date) -
               pd.to_timedelta(30, unit='day')).date()
 add_rates(ax, [start_date, dates[LAST_VALID]], linewidth=1, color='black')
-ax.legend(title='Confirmed cases', loc='center left', bbox_to_anchor=(1, 0.5))
+ax.legend(title='Confirmed cases: peak', loc='center left',
+          bbox_to_anchor=(1, 0.5))
 ax.set_ylabel('per million people per day')
 ax.set_xlim((start_date, dates[LAST_VALID]))
 ax.spines['top'].set_visible(False)
