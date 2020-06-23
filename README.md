@@ -8,11 +8,17 @@ Their Visual Dashboard ([desktop](https://www.arcgis.com/apps/opsdashboard/index
 
 The charts the Financial Times is producing are great: https://www.ft.com/coronavirus-latest. They certainly do a good job of comparing trajectories between countries, and it's great how they single out one country at a time for attention. Unfortunately the tactic of time-aligning the curves according to when the number of cases crosses a fixed threshold means they can't be plotted on a common calendar with significant dates marked. 
 
-![countries with differing approaches](/visualization/CountriesConfirmed1.png)
+![countries with differing approaches](/visualization/CountriesConfirmedPerDay1.png)
 
-![mostly european countries](/visualization/CountriesConfirmed2.png)
+![mostly europe](/visualization/CountriesConfirmedPerDay2.png)
 
-![provinces](/visualization/ProvincesConfirmed.png)
+![mostly South America](/visualization/CountriesConfirmedPerDay4.png)
+
+![mostly Africa](/visualization/CountriesConfirmedPerDay5.png)
+
+![Canadian provinces](/visualization/ProvincesConfirmedPerDay.png)
+
+After most countries reached their peaks it became obvious that incremental case rates were more informative than cumulative case rates.
 
 Sources for the significant dates marked on these plots are given in [/visualization/plots.py](/visualization/plots.py). 
 Something like the Oxford University "stringency index" could be an improvement: https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-response-tracker. Almost anything is likely to be better than my ad hoc choice of key dates - of course governmental directives are not necessarily indicative of the breadth and depth of public participation.
