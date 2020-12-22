@@ -14,8 +14,11 @@ from matplotlib.dates import (
     MonthLocator, ConciseDateFormatter, date2num, num2date)
 from io import StringIO
 from difflib import get_close_matches
+import ssl
 
 import pandas as pd
+
+ssl._create_default_https_context = ssl._create_unverified_context
 
 # %% constants
 MEAN_DAYS = 7
@@ -30,9 +33,9 @@ POP_CSV = (
     'https://raw.githubusercontent.com/datasets/population/master/data/'
     'population.csv')
 PROV_POP_CSV = (
-    'https://www12.statcan.gc.ca/census-recensement/2016/'
-    'dp-pd/hlt-fst/pd-pl/Tables/File.cfm?'
-    'T=101&SR=1&RPP=25&PR=0&CMA=0&CSD=0&S=50&O=A&Lang=Eng&OFT=CSV')
+    'https://www12.statcan.gc.ca/'
+    'census-recensement/2016/dp-pd/hlt-fst/pd-pl/Tables/File.cfm'
+    '?T=101&SR=1&RPP=25&PR=0&CMA=0&CSD=0&S=50&O=A&Lang=Eng&OFT=CSV')
 
 PLOT_COUNTRIES = [
     ['China', 'South Korea', 'Italy', 'Iran', 'United States', 'Canada',
